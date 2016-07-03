@@ -10,7 +10,7 @@ class Search extends React.Component {
       appId: '0HO4Y2VURP',
       apiKey: '2c5c55c3eca1dcd6ca636a19377618d3',
       indexName: 'staging-mytennislessons.com-instructors-distance',
-      urlSync: false
+      urlSync: true
     });
   }
 
@@ -37,32 +37,45 @@ class Search extends React.Component {
         })
       );
 
-      this.search.addWidget(
-        instantsearch.widgets.toggle({
-          container: '#top-coaches',
-          attributeName: 'featured',
-          label: 'See Top Coaches',
-          values: {
-            on: true,
-            off: false
-          }
-        })
-      );
+    this.search.addWidget(
+      instantsearch.widgets.toggle({
+        container: '#top-coaches',
+        attributeName: 'featured',
+        label: 'See Top Coaches',
+        values: {
+          on: true,
+          off: false
+        }
+      })
+    );
 
-      this.search.addWidget(
-        instantsearch.widgets.priceRanges({
-          container: '#price-ranges',
-          attributeName: 'lowest_hourly_rate_sort',
-          labels: {
-            currency: '$',
-            separator: 'to',
-            button: 'Go'
-          },
-          templates: {
-            header: 'Price'
-          }
-        })
-      );
+    this.search.addWidget(
+      instantsearch.widgets.numericRefinementList({
+        container: '#price-ranges',
+        attributeName: 'lowest_hourly_rate_sort',
+        options: [
+          {name: 'All'},
+          {end: 40, name: 'less than $40/hr'},
+          {start: 40, end: 65, name: 'between $40/hr and $65/hr'},
+          {start: 65, name: 'more than $65/hr'}
+        ],
+        templates: {
+          header: 'Starting hourly rate'
+        }
+      })
+    );
+
+    this.search.addWidget(
+      instantsearch.widgets.refinementList({
+        container: '#certifications',
+        attributeName: 'certifications',
+        operator: 'and',
+        limit: 10,
+        templates: {
+          header: 'Certifications'
+        }
+      })
+    );
 
     this.search.start();
   }
@@ -72,8 +85,11 @@ class Search extends React.Component {
       <div className='search-container'>
         <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/instantsearch.js/1/instantsearch.min.css" />
         <input id="search-input" />
-        <div id='top-coaches'></div>
-        <div id='price-ranges'></div>
+        <div className='filter-options'>
+          <div id='certifications'></div>
+          <div id='price-ranges'></div>
+          <div id='top-coaches'></div>
+        </div>
         <div id='search-results'></div>
         <div id='pagination-container'></div>
       </div>
